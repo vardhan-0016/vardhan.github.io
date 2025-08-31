@@ -239,7 +239,59 @@ This project demonstrates my ability to build interactive web platforms.</p>
   <p style="font-size: 20px; color: rgba(167, 163, 163, 0.637)">You can access my resume by clicking the link below:</p>
   <a href="Vardhan_Resume.pdf" style="color:#0b95c4c9; font-size: 20px;">Vardhan_resume</a>
 </section>
+<script>
+  // Collect sections and nav links
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  const navLinks = Array.from(document.querySelectorAll('nav a'));
 
+  // Helper: set active link
+  function setActive(id) {
+    navLinks.forEach(a => a.classList.remove('active'));
+    const match = navLinks.find(a => a.getAttribute('href') === '#' + id);
+    if (match) match.classList.add('active');
+  }
+
+  // Default to home on load
+  setActive('home');
+
+  // Click: highlight immediately
+  navLinks.forEach(a => {
+    a.addEventListener('click', () => {
+      const id = a.getAttribute('href').slice(1);
+      if (id) setActive(id);
+    });
+  });
+
+  // Scroll: highlight the section most in view
+  const observer = new IntersectionObserver((entries) => {
+    // choose the entry with the largest visibility
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (visible && visible.target.id) {
+      setActive(visible.target.id);
+    } else {
+      // when near top and nothing intersecting, keep Home active
+      setActive('home');
+    }
+  }, { threshold: [0.55] }); // ~half the section visible
+
+  sections.forEach(sec => observer.observe(sec));
+  document.addEventListener("DOMContentLoaded", function () {
+  const homeLink = document.querySelector('a[href="#home"]');
+
+  if (homeLink) {
+    homeLink.addEventListener("click", function (event) {
+      event.preventDefault(); // stop default jump
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth" // smooth scroll effect
+      });
+    });
+  }
+});
+
+</script>
 <script>
   const navLinks = document.querySelectorAll("nav a");
   navLinks.forEach(link => {
